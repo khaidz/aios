@@ -95,7 +95,6 @@ public final class CommonUtils {
     public static void writeToOutputFile(List<Output> outputList, String fileName) {
         CsvWriter writer = CsvUtil.getWriter(OUTPUT_DIR + fileName, CharsetUtil.CHARSET_UTF_8);
         List<String[]> dataWriteToFile = outputList.stream()
-                .sorted(Comparator.comparing(Output::getPlan))
                 .sorted(Comparator.comparing(Output::getNetworkID))
                 .map(x -> new String[]{x.getNetworkID(), x.getPlan(), String.valueOf(x.getCount()), String.valueOf(x.getPrice())})
                 .collect(Collectors.toList());

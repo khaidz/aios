@@ -13,9 +13,6 @@
 #### Hướng dẫn chạy
 Chạy lần lượt hàm main trong các file sau.
 - File *src/main/java/net/khaibq/addon/AddonMaster.java* để thực hiện call api và lưu dữ liệu vào các bảng master
-- File *src/main/java/net/khaibq/addon/AddonReadFile.java* để thực hiện đọc dữ liệu Virtual Machine và lưu vào DB
-- File *src/main/java/net/khaibq/addon/AddonVirtualMachine.java* để thực hiện tính toán đưa ra dữ liệu phần Virtual Machine
-
-Với các phần Disk, Redhat, Window sẽ được hướng dẫn sau.
+- File *src/main/java/net/khaibq/addon/AiosBatchApp.java* để thực hiện tính toán VM, Disk, Redhat, Window
 
 Sau khi việc test hoàn tất sẽ tiến hành tách thành các file jar để chạy cron job sau.

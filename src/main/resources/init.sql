@@ -46,30 +46,3 @@ create table aios.aios_master_relative_price
     created_date        timestamp default CURRENT_TIMESTAMP null
 );
 
-create table aios.aios_service_offering
-(
-    id           bigint auto_increment
-        primary key,
-    uuid         varchar(100)                        null,
-    domain_path  varchar(100)                        null,
-    name         varchar(100)                        null,
-    cpu          int                                 null,
-    ram_size     int                                 null,
-    created_date timestamp default CURRENT_TIMESTAMP null
-);
-
-create table aios.aios_virtual_machine
-(
-    id             bigint auto_increment
-        primary key,
-    filename_date  varchar(20)                         null,
-    network_id     varchar(50)                         null,
-    offer_id       varchar(100)                        null,
-    offer_name     varchar(50)                         null,
-    vm_id          varchar(100)                        null,
-    vm_name        varchar(200)                        null,
-    occupancy_time decimal(10, 7)                      null,
-    running_time   decimal(10, 7)                      null,
-    created_date   timestamp default CURRENT_TIMESTAMP null
-);
-
