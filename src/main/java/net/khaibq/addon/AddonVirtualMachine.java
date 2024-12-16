@@ -140,15 +140,15 @@ public class AddonVirtualMachine {
                     .filter(x -> x.getCount() != null && x.getCount() > 0 && x.getPrice() != null && x.getPrice() > 0)
                     .toList();
 
-            writeToOutputFile(finalOutput);
+            writeToOutputFile(finalOutput, "/vm/output-vm.csv");
 
-            writeToVMFile(invalidList, "invalid-vm.csv");
+            writeToVMFile(invalidList, "/vm/invalid-vm.csv");
 
             // Thêm danh sách non charge vào cuối
             List<VirtualMachineCalc> combinedValidAndNonCharge = new ArrayList<>();
             combinedValidAndNonCharge.addAll(finalValidList);
             combinedValidAndNonCharge.addAll(transformListNonCharge);
-            writeToVMFile(combinedValidAndNonCharge, "valid-vm.csv");
+            writeToVMFile(combinedValidAndNonCharge, "/vm/valid-vm.csv");
             logger.info("===== End process Virtual Machine =====");
         } catch (Exception e) {
             e.printStackTrace();
@@ -177,13 +177,13 @@ public class AddonVirtualMachine {
     }
 
     private static void handleCalcType(VirtualMachineCalc vm, List<NonCharge> nonChargeList, List<RelativePrice> relativePriceList, List<BasicPrice> basicPriceList) {
-        LocalDate now = LocalDate.now().withDayOfMonth(1);
+        LocalDate previous = LocalDate.now().minusMonths(1).withDayOfMonth(1);
 
         var nonCharge = nonChargeList.stream()
                 .filter(x -> Objects.equals(x.getNetworkID(), vm.getNetworkID())
                              && "仮想サーバ".equals(x.getType())
                              && Objects.equals(x.getUuid(), vm.getVmId())
-                             && x.getStartTime().compareTo(now) <= 0 && x.getStopTime().compareTo(now) >= 0)
+                             && x.getStartTime().compareTo(previous) <= 0 && x.getStopTime().compareTo(previous) >= 0)
                 .findFirst().orElse(null);
         if (nonCharge != null) {
             vm.setCalcType(Constants.CALC_FREE_TYPE);
@@ -235,7 +235,7 @@ public class AddonVirtualMachine {
     }
 
     private static void writeToVMFile(List<VirtualMachineCalc> list, String filename) {
-        CsvWriter writer = CsvUtil.getWriter(OUTPUT_DIR + File.separator + filename, CharsetUtil.CHARSET_UTF_8);
+        CsvWriter writer = CsvUtil.getWriter(OUTPUT_DIR + filename, CharsetUtil.CHARSET_UTF_8);
         List<String[]> dataWriteToFile = list.stream()
                 .map(x -> new String[]{
                         x.getNetworkID(),

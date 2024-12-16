@@ -13,8 +13,8 @@ public class RedhatModel {
     private String templateUuid;
     private Integer vCpu;
     private Integer calcType;
-    private Integer monthlyPrice;
-    private Integer dailyPrice;
+    private Integer price;
+    private Integer count;
     private Boolean isValid;
     private String invalidReason;
 }

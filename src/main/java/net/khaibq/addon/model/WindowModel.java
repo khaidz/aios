@@ -10,8 +10,8 @@ public class WindowModel {
     private String name;
     private String path;
     private Integer calcType;
-    private Integer monthlyPrice;
-    private Integer dailyPrice;
+    private Integer price;
+    private Integer count;
     private Boolean isValid;
     private String invalidReason;
 }

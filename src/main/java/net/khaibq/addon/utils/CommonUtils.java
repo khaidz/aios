@@ -92,8 +92,8 @@ public final class CommonUtils {
         return String.valueOf(input);
     }
 
-    public static void writeToOutputFile(List<Output> outputList) {
-        CsvWriter writer = CsvUtil.getWriter(OUTPUT_DIR + "/output-vm.csv", CharsetUtil.CHARSET_UTF_8);
+    public static void writeToOutputFile(List<Output> outputList, String fileName) {
+        CsvWriter writer = CsvUtil.getWriter(OUTPUT_DIR + fileName, CharsetUtil.CHARSET_UTF_8);
         List<String[]> dataWriteToFile = outputList.stream()
                 .sorted(Comparator.comparing(Output::getPlan))
                 .sorted(Comparator.comparing(Output::getNetworkID))
