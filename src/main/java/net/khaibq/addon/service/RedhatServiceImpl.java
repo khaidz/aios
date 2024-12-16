@@ -1,4 +1,4 @@
-package net.khaibq.addon;
+package net.khaibq.addon.service;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.text.csv.CsvData;
@@ -11,8 +11,6 @@ import net.khaibq.addon.model.BasicPrice;
 import net.khaibq.addon.model.NonCharge;
 import net.khaibq.addon.model.Output;
 import net.khaibq.addon.model.RedhatModel;
-import net.khaibq.addon.service.MasterService;
-import net.khaibq.addon.service.MasterServiceImpl;
 import net.khaibq.addon.utils.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,10 +27,11 @@ import static net.khaibq.addon.utils.CommonUtils.writeToOutputFile;
 import static net.khaibq.addon.utils.Constants.OUTPUT_DIR;
 import static net.khaibq.addon.utils.Constants.REDHAT_DIR;
 
-public class AddonRedhat {
-    private static final Logger logger = LogManager.getLogger(AddonRedhat.class);
+public class RedhatServiceImpl implements BaseService {
+    private static final Logger logger = LogManager.getLogger(RedhatServiceImpl.class);
 
-    public static void main(String[] args) {
+    @Override
+    public void execute() {
         logger.info("===== Start process Redhat =====");
         MasterService masterService = new MasterServiceImpl();
 
@@ -111,7 +110,7 @@ public class AddonRedhat {
         }
     }
 
-    public static List<RedhatModel> getRedhatModel(String path) {
+    private List<RedhatModel> getRedhatModel(String path) {
         var listFileName = FileUtil.listFileNames(path);
         var listFileVolume = listFileName.stream()
                 .map(String::toLowerCase)
@@ -143,7 +142,7 @@ public class AddonRedhat {
         return list;
     }
 
-    private static void handleCalcType(RedhatModel redhat, List<NonCharge> nonChargeList, List<BasicPrice> basicPriceList) {
+    private void handleCalcType(RedhatModel redhat, List<NonCharge> nonChargeList, List<BasicPrice> basicPriceList) {
         LocalDate previous = LocalDate.now().minusMonths(1).withDayOfMonth(1);
 
         var nonCharge = nonChargeList.stream()
@@ -181,7 +180,7 @@ public class AddonRedhat {
         }
     }
 
-    private static void writeToRedhatFile(List<RedhatModel> list, String filename) {
+    private void writeToRedhatFile(List<RedhatModel> list, String filename) {
         CsvWriter writer = CsvUtil.getWriter(OUTPUT_DIR + File.separator + filename, CharsetUtil.CHARSET_UTF_8);
         List<String[]> dataWriteToFile = list.stream()
                 .map(x -> new String[]{

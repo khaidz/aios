@@ -1,4 +1,4 @@
-package net.khaibq.addon;
+package net.khaibq.addon.service;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Tuple;
@@ -15,8 +15,6 @@ import net.khaibq.addon.model.RelativePrice;
 import net.khaibq.addon.model.VolClassModel;
 import net.khaibq.addon.model.VolumeModel;
 import net.khaibq.addon.model.VolumeS12S34Model;
-import net.khaibq.addon.service.MasterService;
-import net.khaibq.addon.service.MasterServiceImpl;
 import net.khaibq.addon.utils.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,11 +34,11 @@ import static net.khaibq.addon.utils.Constants.VOLUMES_S12_S34_DIR;
 import static net.khaibq.addon.utils.Constants.VOLUME_DIR;
 import static net.khaibq.addon.utils.Constants.VOL_CLASS_DIR;
 
+public class DiskServiceImpl implements BaseService {
+    private static final Logger logger = LogManager.getLogger(DiskServiceImpl.class);
 
-public class AddonDisk {
-    private static final Logger logger = LogManager.getLogger(AddonDisk.class);
-
-    public static void main(String[] args) {
+    @Override
+    public void execute() {
         logger.info("===== Start process Disk =====");
         MasterService masterService = new MasterServiceImpl();
 
@@ -161,14 +159,15 @@ public class AddonDisk {
                                 .filter(x -> x.getFlagMonth() == 0).toList();
                         var totalOccupancyTime = listFlagMonth0.stream()
                                 .map(VolumeModel::getOccupancyTime).reduce(0D, Double::sum);
-
-                        Output output = new Output();
-                        output.setNetworkID(key.get(0));
-                        String plan = buildPlan(key.get(1), key.get(2)) + "(日単位料金）";
-                        output.setPlan(plan);
-                        output.setCount((int) Math.round(Math.floor(totalOccupancyTime / 24)));
-                        output.setPrice(listFlagMonth0.get(0).getDailyPrice());
-                        outputList.add(output);
+                        if (!listFlagMonth0.isEmpty()){
+                            Output output = new Output();
+                            output.setNetworkID(key.get(0));
+                            String plan = buildPlan(key.get(1), key.get(2)) + "(日単位料金）";
+                            output.setPlan(plan);
+                            output.setCount((int) Math.round(Math.floor(totalOccupancyTime / 24)));
+                            output.setPrice(listFlagMonth0.get(0).getDailyPrice());
+                            outputList.add(output);
+                        }
                     });
             // Loại bỏ những giá trị count = 0 hoặc price = 0
             List<Output> finalOutput = outputList.stream()
@@ -190,10 +189,9 @@ public class AddonDisk {
             logger.info("===== Exception in process Disk =====");
             logger.info("========== Reason: {}", e.getMessage());
         }
-
     }
 
-    public static List<VolumeModel> getVolumeData(String path) {
+    private List<VolumeModel> getVolumeData(String path) {
         var listFileName = FileUtil.listFileNames(path);
         var listFileVolume = listFileName.stream()
                 .map(String::toLowerCase)
@@ -230,7 +228,7 @@ public class AddonDisk {
         return list;
     }
 
-    public static List<VolumeS12S34Model> getVolumeS12S34Data(String path) {
+    private List<VolumeS12S34Model> getVolumeS12S34Data(String path) {
         var listFileName = FileUtil.listFileNames(path);
         var listFileVolume = listFileName.stream()
                 .map(String::toLowerCase)
@@ -261,7 +259,7 @@ public class AddonDisk {
         return list;
     }
 
-    public static List<VolClassModel> getVolClassData(String path) {
+    private List<VolClassModel> getVolClassData(String path) {
         var listFileName = FileUtil.listFileNames(path);
         var listFileVolume = listFileName.stream()
                 .map(String::toLowerCase)
@@ -288,7 +286,7 @@ public class AddonDisk {
         return list;
     }
 
-    private static void handleCalcType(VolumeModel vm, List<NonCharge> nonChargeList, List<RelativePrice> relativePriceList, List<BasicPrice> basicPriceList) {
+    private void handleCalcType(VolumeModel vm, List<NonCharge> nonChargeList, List<RelativePrice> relativePriceList, List<BasicPrice> basicPriceList) {
         LocalDate now = LocalDate.now().withDayOfMonth(1);
 
         var nonCharge = nonChargeList.stream()
@@ -338,7 +336,7 @@ public class AddonDisk {
         }
     }
 
-    private static List<VolumeModel> handleFlagMonth(List<VolumeModel> finalValidList) {
+    private List<VolumeModel> handleFlagMonth(List<VolumeModel> finalValidList) {
         return finalValidList.stream().map(x -> {
             if (x.getOccupancyTimeDay() >= 20) {
                 x.setFlagMonth(1);
@@ -349,8 +347,8 @@ public class AddonDisk {
         }).toList();
     }
 
-    private static String buildPlan(String clazz, Integer allocatedGB) {
-        if (allocatedGB < 1024) {
+    private String buildPlan(String clazz, Integer allocatedGB) {
+        if (allocatedGB < 1000) {
             return "HDD-" + clazz + "-" + allocatedGB + "GB";
         }
         if (allocatedGB == 1024) {
@@ -359,7 +357,7 @@ public class AddonDisk {
         return "HDD-" + clazz + "-" + String.format("%.2f", (double) allocatedGB / 1000) + "GB";
     }
 
-    private static void writeToDiskFile(List<VolumeModel> list, String filename) {
+    private void writeToDiskFile(List<VolumeModel> list, String filename) {
         CsvWriter writer = CsvUtil.getWriter(OUTPUT_DIR + File.separator + filename, CharsetUtil.CHARSET_UTF_8);
         List<String[]> dataWriteToFile = list.stream()
                 .map(x -> new String[]{
