@@ -1,7 +1,7 @@
 package net.khaibq.addon.utils;
 
 public class Constants {
-    public static final String X_HD_API_TOKEN = "88k52dImHgvWcRVVcQZeejmT0sml4p07x78e8lEvoRrLnF6rhhcMf47fKDXlbUUu";
+    public static final String X_HD_API_TOKEN = "";
     public static final Integer LIMIT = 200;
     public static final String BASIC_PRICE_DB_SCHEMA_ID = "101383";
     public static final String RELATIVE_PRICE_DB_SCHEMA_ID = "101384";
