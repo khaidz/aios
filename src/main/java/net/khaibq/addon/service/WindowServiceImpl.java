@@ -12,6 +12,7 @@ import net.khaibq.addon.model.BasicPrice;
 import net.khaibq.addon.model.NonCharge;
 import net.khaibq.addon.model.Output;
 import net.khaibq.addon.model.WindowModel;
+import net.khaibq.addon.utils.CommonUtils;
 import net.khaibq.addon.utils.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -126,6 +127,8 @@ public class WindowServiceImpl implements BaseService {
                 .map(String::toLowerCase)
                 .filter(x -> x.contains("windowsos_"))
                 .toList();
+
+        CommonUtils.backupFile(path, "window", listFileVolume);
 
         List<WindowModel> list = new ArrayList<>();
 

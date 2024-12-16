@@ -11,6 +11,7 @@ import net.khaibq.addon.model.BasicPrice;
 import net.khaibq.addon.model.NonCharge;
 import net.khaibq.addon.model.Output;
 import net.khaibq.addon.model.RedhatModel;
+import net.khaibq.addon.utils.CommonUtils;
 import net.khaibq.addon.utils.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -116,6 +117,8 @@ public class RedhatServiceImpl implements BaseService {
                 .map(String::toLowerCase)
                 .filter(x -> x.contains("rhelos_"))
                 .toList();
+
+        CommonUtils.backupFile(path, "redhat", listFileVolume);
 
         List<RedhatModel> list = new ArrayList<>();
 

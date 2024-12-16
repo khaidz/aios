@@ -15,6 +15,7 @@ import net.khaibq.addon.model.RelativePrice;
 import net.khaibq.addon.model.VolClassModel;
 import net.khaibq.addon.model.VolumeModel;
 import net.khaibq.addon.model.VolumeS12S34Model;
+import net.khaibq.addon.utils.CommonUtils;
 import net.khaibq.addon.utils.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -159,7 +160,7 @@ public class DiskServiceImpl implements BaseService {
                                 .filter(x -> x.getFlagMonth() == 0).toList();
                         var totalOccupancyTime = listFlagMonth0.stream()
                                 .map(VolumeModel::getOccupancyTime).reduce(0D, Double::sum);
-                        if (!listFlagMonth0.isEmpty()){
+                        if (!listFlagMonth0.isEmpty()) {
                             Output output = new Output();
                             output.setNetworkID(key.get(0));
                             String plan = buildPlan(key.get(1), key.get(2)) + "(日単位料金）";
@@ -199,6 +200,8 @@ public class DiskServiceImpl implements BaseService {
                 .filter(x -> x.contains("_volume"))
                 .toList();
 
+        CommonUtils.backupFile(path, "disk", listFileVolume);
+
         List<VolumeModel> list = new ArrayList<>();
 
         for (String fileNameVolume : listFileVolume) {
@@ -235,6 +238,8 @@ public class DiskServiceImpl implements BaseService {
                 .filter(x -> x.contains("volumes_"))
                 .toList();
 
+        CommonUtils.backupFile(path, "disk", listFileVolume);
+
         List<VolumeS12S34Model> list = new ArrayList<>();
 
         for (String fileNameVolume : listFileVolume) {
@@ -265,6 +270,8 @@ public class DiskServiceImpl implements BaseService {
                 .map(String::toLowerCase)
                 .filter(x -> x.contains("volclass"))
                 .toList();
+
+        CommonUtils.backupFile(path, "disk", listFileVolume);
 
         List<VolClassModel> list = new ArrayList<>();
 

@@ -14,6 +14,7 @@ import net.khaibq.addon.model.Output;
 import net.khaibq.addon.model.RelativePrice;
 import net.khaibq.addon.model.ServiceOfferingModel;
 import net.khaibq.addon.model.VirtualMachineModel;
+import net.khaibq.addon.utils.CommonUtils;
 import net.khaibq.addon.utils.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -182,6 +183,8 @@ public class VirtualMachineServiceImpl implements BaseService {
                 .filter(x -> x.contains("_allocated_vm"))
                 .toList();
 
+        CommonUtils.backupFile(path, "vm", listFileAllocatedVM);
+
         List<VirtualMachineModel> list = new ArrayList<>();
 
         for (String fileNameAllocatedVM : listFileAllocatedVM) {
@@ -229,6 +232,7 @@ public class VirtualMachineServiceImpl implements BaseService {
                 .map(String::toLowerCase)
                 .filter(x -> x.startsWith("serviceoffering_s"))
                 .toList();
+        CommonUtils.backupFile(path, "vm", listFileServiceOffering);
 
         List<ServiceOfferingModel> list = new ArrayList<>();
         for (String fileNameServiceOffering : listFileServiceOffering) {

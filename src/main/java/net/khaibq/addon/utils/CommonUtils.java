@@ -1,5 +1,6 @@
 package net.khaibq.addon.utils;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.csv.CsvUtil;
 import cn.hutool.core.text.csv.CsvWriter;
@@ -8,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.khaibq.addon.model.Output;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static net.khaibq.addon.utils.Constants.BACKUP_DIR;
 import static net.khaibq.addon.utils.Constants.OUTPUT_DIR;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -100,5 +103,16 @@ public final class CommonUtils {
                 .collect(Collectors.toList());
         dataWriteToFile.add(0, new String[]{"networkID", "plan", "count", "price"});
         writer.write(dataWriteToFile);
+    }
+
+    public static void backupFile(String path, String type, List<String> filenames) {
+        filenames.forEach(filename -> backupFile(path, type, filename));
+    }
+
+    public static void backupFile(String path, String type, String filename) {
+        String date = DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDateTime.now());
+        String srcPath = path + File.separator + filename;
+        String destPath = BACKUP_DIR + File.separator + date + File.separator + type + File.separator + filename;
+        FileUtil.copy(srcPath, destPath, true);
     }
 }
