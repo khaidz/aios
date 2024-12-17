@@ -7,9 +7,11 @@ import cn.hutool.core.text.csv.CsvRow;
 import cn.hutool.core.text.csv.CsvUtil;
 import cn.hutool.core.text.csv.CsvWriter;
 import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.http.ContentType;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
+import net.khaibq.addon.model.ApiResponse;
 import net.khaibq.addon.model.Output;
 import net.khaibq.addon.service.DiskServiceImpl;
 import net.khaibq.addon.service.RedhatServiceImpl;
@@ -25,14 +27,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static net.khaibq.addon.utils.CommonUtils.defaultNull;
+import static net.khaibq.addon.utils.Constants.DELAY_TIME;
 import static net.khaibq.addon.utils.Constants.OUTPUT_DIR;
 import static net.khaibq.addon.utils.Constants.UPLOAD_CSV_DB_SCHEMA_ID;
 import static net.khaibq.addon.utils.Constants.UPLOAD_CSV_IMPORT_ID;
 
 public class AiosBatchApp {
     private static final Logger logger = LogManager.getLogger(AiosBatchApp.class);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) {
         new VirtualMachineServiceImpl().execute();
@@ -40,11 +47,40 @@ public class AiosBatchApp {
         new RedhatServiceImpl().execute();
         new WindowServiceImpl().execute();
 
-        // Lưu file kết quả
-        writeResultToFile();
+        try {
+            // Lưu file kết quả
+            writeResultToFile();
 
-        // Upload file kết quả csv
-        uploadResultToServer();
+            // Upload file kết quả csv
+            ApiResponse uploadResponse = uploadResultToServer();
+
+            if (uploadResponse != null && uploadResponse.getCode() == 200) {
+                // Nếu upload file kết quả thành công. Sau x phút sẽ call api check kết quả
+                scheduler.schedule(() -> {
+                    ApiResponse checkResultResponse = callApiCheckResult(uploadResponse.getQuery().getProcessId());
+                    if (checkResultResponse != null && checkResultResponse.getCode() == 200) {
+                        ApiResponse.Items items = checkResultResponse.getItems();
+                        String text = """
+                                nowCondition: %d,
+                                progress: %d,
+                                succeedCount: %d,
+                                failureCount: %d
+                                """.formatted(items.getNowCondition(), items.getProgress(), items.getSucceedCount(), items.getFailureCount());
+
+                        // Gửi dữ liệu sang slack
+                        postSlack(text);
+                    } else {
+                        logger.error("Check result failed");
+                    }
+                }, DELAY_TIME, TimeUnit.MINUTES);
+
+            } else {
+                logger.error("Upload result file failed");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
     }
 
     public static void writeResultToFile() {
@@ -84,9 +120,44 @@ public class AiosBatchApp {
         writer.write(dataWriteToFile);
     }
 
-    private static String uploadResultToServer() {
+    private static ApiResponse callApiCheckResult(String processId) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-HD-apitoken", Constants.X_HD_API_TOKEN);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("processId", processId);
+
+        HttpRequest httpRequest = HttpUtil.createPost(Constants.API_UPLOAD_CSV_URL)
+                .addHeaders(headers)
+                .body(JSONUtil.toJsonStr(payload));
+
+        var response = httpRequest.execute();
+        if (response.isOk()) {
+            logger.info("Call api check result success: {}", response.body());
+            return JSONUtil.toBean(response.body(), ApiResponse.class);
+        } else {
+            throw new RuntimeException("Call api check result error: " + response.body());
+        }
+    }
+
+    private static void postSlack(String text) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("text", text);
+
+        HttpRequest httpRequest = HttpUtil.createPost(Constants.POST_SLACK_URL)
+                .contentType(ContentType.JSON.getValue())
+                .body(JSONUtil.toJsonStr(payload));
+        var response = httpRequest.execute();
+        if (response.isOk()) {
+            logger.info("Call api post slack success: {}", response.body());
+        } else {
+            throw new RuntimeException("Call api post slack error: " + response.body());
+        }
+    }
+
+    private static ApiResponse uploadResultToServer() {
         // Kiểm tra nếu có file mới thực hiện upload
-        if (!FileUtil.exist(OUTPUT_DIR  + "/result.csv")){
+        if (!FileUtil.exist(OUTPUT_DIR + "/result.csv")) {
             logger.info("Do not have file result");
             return null;
         }
@@ -100,16 +171,16 @@ public class AiosBatchApp {
 
         Map<String, Object> formMap = new HashMap<>();
         formMap.put("json", JSONUtil.toJsonStr(json));
-        formMap.put("uploadFile", FileUtil.file(OUTPUT_DIR  + "/result.csv"));
+        formMap.put("uploadFile", FileUtil.file(OUTPUT_DIR + "/result.csv"));
 
-        HttpRequest httpRequest = HttpUtil.createPost(Constants.API_GET_DATA_MASTER_URL)
+        HttpRequest httpRequest = HttpUtil.createPost(Constants.API_UPLOAD_CSV_URL)
                 .addHeaders(headers)
                 .form(formMap);
         var response = httpRequest.execute();
         if (response.isOk()) {
-            return response.body();
+            logger.info("Call api upload success: {}", response.body());
+            return JSONUtil.toBean(response.body(), ApiResponse.class);
         } else {
-            logger.info("Call api upload csv error: {}", response.body());
             throw new RuntimeException("Call api upload csv error: " + response.body());
         }
     }

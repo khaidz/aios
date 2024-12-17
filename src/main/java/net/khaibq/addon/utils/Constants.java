@@ -1,6 +1,6 @@
 package net.khaibq.addon.utils;
 
-public class Constants {
+public final class Constants {
     public static final String X_HD_API_TOKEN = "";
     public static final Integer LIMIT = 200;
     public static final String BASIC_PRICE_DB_SCHEMA_ID = "101383";
@@ -10,7 +10,9 @@ public class Constants {
     public static final String UPLOAD_CSV_IMPORT_ID = "100592";
     public static final String API_GET_DATA_MASTER_URL = "https://hnflora.rakurakuhanbai.jp/sks8vpa/api/csvexport/version/v1";
     public static final String API_UPLOAD_CSV_URL = "https://hnflora.rakurakuhanbai.jp/sks8vpa/api/csvdataimport/version/v1";
+    public static final String POST_SLACK_URL = "";
 
+    public static final Integer DELAY_TIME = 5; // 5minute
 
     public static final Integer CALC_BASIC_TYPE = 0;
     public static final Integer CALC_FREE_TYPE = 1;
