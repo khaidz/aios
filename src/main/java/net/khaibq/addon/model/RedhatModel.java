@@ -13,6 +13,7 @@ public class RedhatModel {
     private String templateUuid;
     private Integer vCpu;
     private Integer calcType;
+    private Integer redhatFlag;
     private Integer price;
     private Integer count;
     private Boolean isValid;

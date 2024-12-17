@@ -80,17 +80,17 @@ public final class CommonUtils {
         return null;
     }
 
-    public static String defaultNullIfEmpty(Integer input) {
+    public static String defaultNull(Integer input) {
         if (input == null) return null;
         return String.valueOf(input);
     }
 
-    public static String defaultNullIfEmpty(Long input) {
+    public static String defaultNull(Long input) {
         if (input == null) return null;
         return String.valueOf(input);
     }
 
-    public static String defaultNullIfEmpty(Double input) {
+    public static String defaultNull(Double input) {
         if (input == null) return null;
         return String.valueOf(input);
     }

@@ -1,6 +1,7 @@
 package net.khaibq.addon.service;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Tuple;
 import cn.hutool.core.text.csv.CsvData;
 import cn.hutool.core.text.csv.CsvReader;
 import cn.hutool.core.text.csv.CsvRow;
@@ -11,6 +12,7 @@ import net.khaibq.addon.model.BasicPrice;
 import net.khaibq.addon.model.NonCharge;
 import net.khaibq.addon.model.Output;
 import net.khaibq.addon.model.RedhatModel;
+import net.khaibq.addon.model.WindowModel;
 import net.khaibq.addon.utils.CommonUtils;
 import net.khaibq.addon.utils.Constants;
 import org.apache.logging.log4j.LogManager;
@@ -20,10 +22,11 @@ import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static net.khaibq.addon.utils.CommonUtils.defaultNullIfEmpty;
+import static net.khaibq.addon.utils.CommonUtils.defaultNull;
 import static net.khaibq.addon.utils.CommonUtils.writeToOutputFile;
 import static net.khaibq.addon.utils.Constants.OUTPUT_DIR;
 import static net.khaibq.addon.utils.Constants.REDHAT_DIR;
@@ -78,15 +81,33 @@ public class RedhatServiceImpl implements BaseService {
             List<RedhatModel> finalValidList = validList.stream()
                     .filter(x -> !invalidNetworkIds.contains(x.getNetworkID())).toList();
 
+            // Nhóm các vm theo network
+            Map<Tuple, List<RedhatModel>> groupNetwork = finalValidList.stream()
+                    .collect(Collectors.groupingBy(redhat -> new Tuple(redhat.getNetworkID())));
+
             List<Output> outputList = new ArrayList<>();
-            finalValidList.forEach(redhat -> {
-                Output output = new Output();
-                output.setNetworkID(redhat.getNetworkID());
-                output.setPlan(null);
-                output.setCount(redhat.getCount());
-                output.setPrice(redhat.getPrice());
-                outputList.add(output);
-            });
+
+            groupNetwork.keySet()
+                    .forEach(key -> {
+                        List<RedhatModel> list = groupNetwork.get(key);
+                        if (list.get(0).getRedhatFlag() == 0){
+                            list.forEach(redhat -> {
+                                Output output = new Output();
+                                output.setNetworkID(redhat.getNetworkID());
+                                output.setPlan(null);
+                                output.setCount(redhat.getCount());
+                                output.setPrice(redhat.getPrice());
+                                outputList.add(output);
+                            });
+                        } else {
+                            Output output = new Output();
+                            output.setNetworkID(key.get(0));
+                            output.setPlan(null);
+                            output.setCount(list.size());
+                            output.setPrice(list.get(0).getPrice());
+                            outputList.add(output);
+                        }
+                    });
 
             // Loại bỏ những giá trị count = 0 hoặc price = 0
             List<Output> finalOutput = outputList.stream()
@@ -162,19 +183,28 @@ public class RedhatServiceImpl implements BaseService {
                     .filter(x -> Objects.equals(x.getNetworkID(), redhat.getNetworkID()))
                     .findFirst().orElse(null);
             if (basicPrice != null) {
-                if (redhat.getVCpu() <= 8) {
+                redhat.setRedhatFlag(basicPrice.getRedhatFlag());
+                if (Objects.equals(basicPrice.getRedhatFlag(), 0)){
+                    if (redhat.getVCpu() <= 8) {
+                        redhat.setPrice(basicPrice.getUnitPriceRedHat1to8());
+                        redhat.setCount(redhat.getVCpu());
+                    } else if (redhat.getVCpu() <= 127) {
+                        redhat.setPrice(basicPrice.getUnitPriceRedHat9to127());
+                        redhat.setCount(redhat.getVCpu());
+                    } else if (redhat.getVCpu() == 128) {
+                        redhat.setPrice(basicPrice.getUnitPriceRedHat128());
+                        redhat.setCount(redhat.getVCpu());
+                    } else {
+                        redhat.setIsValid(false);
+                        redhat.setInvalidReason("vCpu in valid range");
+                    }
+                } else if (Objects.equals(basicPrice.getRedhatFlag(), 1)){
                     redhat.setPrice(basicPrice.getUnitPriceRedHat1to8());
-                    redhat.setCount(redhat.getVCpu());
-                } else if (redhat.getVCpu() <= 127) {
-                    redhat.setPrice(basicPrice.getUnitPriceRedHat9to127());
-                    redhat.setCount(redhat.getVCpu());
-                } else if (redhat.getVCpu() == 128) {
-                    redhat.setPrice(basicPrice.getUnitPriceRedHat128());
-                    redhat.setCount(redhat.getVCpu());
                 } else {
                     redhat.setIsValid(false);
-                    redhat.setInvalidReason("vCpu in valid range");
+                    redhat.setInvalidReason("redhatFlag invalid");
                 }
+
             } else {
                 // Trường hợp không tìm thấy basic price thì đánh dấu là không hợp lệ
                 redhat.setIsValid(false);
@@ -194,10 +224,11 @@ public class RedhatServiceImpl implements BaseService {
                         x.getDomain(),
                         x.getGuestOsId(),
                         x.getTemplateUuid(),
-                        defaultNullIfEmpty(x.getVCpu()),
-                        defaultNullIfEmpty(x.getCalcType()),
-                        defaultNullIfEmpty(x.getPrice()),
-                        defaultNullIfEmpty(x.getCount()),
+                        defaultNull(x.getVCpu()),
+                        defaultNull(x.getCalcType()),
+                        defaultNull(x.getRedhatFlag()),
+                        defaultNull(x.getPrice()),
+                        defaultNull(x.getCount()),
                         String.valueOf(x.getIsValid()),
                         x.getInvalidReason()
                 })
@@ -212,6 +243,7 @@ public class RedhatServiceImpl implements BaseService {
                 "templateUuid",
                 "vCpu",
                 "calcType",
+                "redhatFlag",
                 "price",
                 "count",
                 "isValid",

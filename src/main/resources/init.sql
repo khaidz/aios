@@ -11,6 +11,7 @@ create table aios.aios_master_basic_price
     unit_price_red_hat_1_to_8   int                                 null,
     unit_price_red_hat_9_to_127 int                                 null,
     unit_price_red_hat_128      int                                 null,
+    redhat_flag                 int                                 null,
     status                      int       default 1                 not null,
     created_date                timestamp default CURRENT_TIMESTAMP null
 );

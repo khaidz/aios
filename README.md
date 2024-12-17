@@ -12,7 +12,7 @@
 
 #### Hướng dẫn chạy
 Chạy lần lượt hàm main trong các file sau.
-- File *src/main/java/net/khaibq/addon/AddonMaster.java* để thực hiện call api và lưu dữ liệu vào các bảng master
+- File *src/main/java/net/khaibq/addon/AiosMaster.java* để thực hiện call api và lưu dữ liệu vào các bảng master
 - File *src/main/java/net/khaibq/addon/AiosBatchApp.java* để thực hiện tính toán VM, Disk, Redhat, Window
 
 Sau khi việc test hoàn tất sẽ tiến hành tách thành các file jar để chạy cron job sau.

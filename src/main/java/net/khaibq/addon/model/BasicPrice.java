@@ -26,6 +26,8 @@ public class BasicPrice {
     private Integer unitPriceRedHat9to127;
     @Alias("RedHat　128vCPUs～単価")
     private Integer unitPriceRedHat128;
+    @Alias("Redhat　集計フラグ")
+    private Integer redhatFlag;
     private Integer status;
     private LocalDateTime createdDate;
 }

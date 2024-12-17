@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static net.khaibq.addon.utils.CommonUtils.defaultNullIfEmpty;
+import static net.khaibq.addon.utils.CommonUtils.defaultNull;
 import static net.khaibq.addon.utils.Constants.OUTPUT_DIR;
 import static net.khaibq.addon.utils.Constants.UPLOAD_CSV_DB_SCHEMA_ID;
 import static net.khaibq.addon.utils.Constants.UPLOAD_CSV_IMPORT_ID;
@@ -58,22 +58,22 @@ public class AiosBatchApp {
 
         List<String[]> dataWriteToFile = new ArrayList<>();
         outputVmList.forEach(x -> {
-            String[] s = new String[]{x.getNetworkID(), "", "aios", defaultNullIfEmpty(x.getPrice()), localDateFmt, "", defaultNullIfEmpty(x.getCount()), x.getPlan(), "", "", "", "", "", ""};
+            String[] s = new String[]{x.getNetworkID(), "", "aios", defaultNull(x.getPrice()), localDateFmt, "", defaultNull(x.getCount()), x.getPlan(), "", "", "", "", "", ""};
             dataWriteToFile.add(s);
         });
 
         outputDiskList.forEach(x -> {
-            String[] s = new String[]{x.getNetworkID(), "", "aios", defaultNullIfEmpty(x.getPrice()), localDateFmt, "", defaultNullIfEmpty(x.getCount()), x.getPlan(), "", "", "", "", "", ""};
+            String[] s = new String[]{x.getNetworkID(), "", "aios", defaultNull(x.getPrice()), localDateFmt, "", defaultNull(x.getCount()), x.getPlan(), "", "", "", "", "", ""};
             dataWriteToFile.add(s);
         });
 
         outputRedhatList.forEach(x -> {
-            String[] s = new String[]{x.getNetworkID(), "", "aios", defaultNullIfEmpty(x.getPrice()), localDateFmt, "", defaultNullIfEmpty(x.getCount()), "", "", "", "", "", "", ""};
+            String[] s = new String[]{x.getNetworkID(), "", "aios", defaultNull(x.getPrice()), localDateFmt, "", defaultNull(x.getCount()), "", "", "", "", "", "", ""};
             dataWriteToFile.add(s);
         });
 
         outputWindowList.forEach(x -> {
-            String[] s = new String[]{x.getNetworkID(), "", "aios", defaultNullIfEmpty(x.getPrice()), localDateFmt, "", defaultNullIfEmpty(x.getCount()), "", "", "", "", "", "", ""};
+            String[] s = new String[]{x.getNetworkID(), "", "aios", defaultNull(x.getPrice()), localDateFmt, "", defaultNull(x.getCount()), "", "", "", "", "", "", ""};
             dataWriteToFile.add(s);
         });
 

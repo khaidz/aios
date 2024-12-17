@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static net.khaibq.addon.utils.CommonUtils.defaultNullIfEmpty;
+import static net.khaibq.addon.utils.CommonUtils.defaultNull;
 import static net.khaibq.addon.utils.CommonUtils.writeToOutputFile;
 import static net.khaibq.addon.utils.Constants.OUTPUT_DIR;
 import static net.khaibq.addon.utils.Constants.WINDOW_DIR;
@@ -81,7 +81,7 @@ public class WindowServiceImpl implements BaseService {
             List<WindowModel> finalValidList = validList.stream()
                     .filter(x -> !invalidNetworkIds.contains(x.getNetworkID())).collect(Collectors.toList());
 
-            // Nhóm các vm theo network, class, allocated
+            // Nhóm các vm theo network
             Map<Tuple, List<WindowModel>> groupNetwork = finalValidList.stream()
                     .collect(Collectors.groupingBy(vm -> new Tuple(vm.getNetworkID())));
 
@@ -187,9 +187,9 @@ public class WindowServiceImpl implements BaseService {
                         x.getGuestOsId(),
                         x.getName(),
                         x.getPath(),
-                        defaultNullIfEmpty(x.getCalcType()),
-                        defaultNullIfEmpty(x.getPrice()),
-                        defaultNullIfEmpty(x.getCount()),
+                        defaultNull(x.getCalcType()),
+                        defaultNull(x.getPrice()),
+                        defaultNull(x.getCount()),
                         String.valueOf(x.getIsValid()),
                         x.getInvalidReason()
                 })

@@ -36,19 +36,19 @@ public class MasterServiceImpl implements MasterService {
     @Override
     public void retrieveDataBasicPrice() {
         try {
-            var responseBody = callApiGetMasterData(Constants.BASIC_PRICE_DB_SCHEMA_ID);
-//            var responseBody = """
-//                    "契約サービスID","仮想サーバ1vCPU(1core)単価","仮想サーバメモリ(1GB)単価","仮想ディスク class1(10GB)単価","仮想ディスク class2(10GB)単価","Windows Server 単価","RedHat　１to8vCPUs単価","RedHat　９to127vCPUs単価","RedHat　128vCPUs～単価"
-//                    "ccs99808","0","0","0","0","0","0","0","0"
-//                    "ccs99807","0","0","0","0","0","0","0","0"
-//                    "ccs99804","0","0","0","0","0","0","0","0"
-//                    "ccs99811","4800","1350","750","400","4800","6900","0","0"
-//                    "ccs99810","3800","1200","700","300","4255","6900","0","0"
-//                    "ccs99809","4800","1350","750","400","4800","6900","0","0"
-//                    "ccs99806","3800","1200","700","275","4800","6900","0","0"
-//                    "ccs99805","4800","1350","750","400","4800","6900","0","0"
-//                    "ccs99803","3800","1200","650","250","4000","0","0","0"
-//                    """;
+//            var responseBody = callApiGetMasterData(Constants.BASIC_PRICE_DB_SCHEMA_ID);
+            var responseBody = """
+                    "契約サービスID","仮想サーバ1vCPU(1core)単価","仮想サーバメモリ(1GB)単価","仮想ディスク class1(10GB)単価","仮想ディスク class2(10GB)単価","Windows Server 単価","RedHat　１to8vCPUs単価","RedHat　９to127vCPUs単価","RedHat　128vCPUs～単価","Redhat　集計フラグ"
+                    "ccs99808","0","0","0","0","0","0","0","0","0"
+                    "ccs99807","0","0","0","0","0","0","0","0","0"
+                    "ccs99804","0","0","0","0","0","0","0","0","0"
+                    "ccs99811","4800","1350","750","400","4800","6900","0","0","0"
+                    "ccs99810","3800","1200","700","300","4255","6900","0","0","0"
+                    "ccs99809","4800","1350","750","400","4800","6900","0","0","0"
+                    "ccs99806","3800","1200","700","275","4800","6900","0","0","0"
+                    "ccs99805","4800","1350","750","400","4800","6900","0","0","0"
+                    "ccs99803","3800","1200","650","250","4000","0","0","0","0"
+                    """;
             CsvReader reader = CsvUtil.getReader();
             CsvData data = reader.readFromStr(responseBody);
             List<CsvRow> rows = data.getRows();
@@ -65,7 +65,8 @@ public class MasterServiceImpl implements MasterService {
                 basicPrice.setUnitPriceWindowServer(getInteger(row.get(5)));
                 basicPrice.setUnitPriceRedHat1to8(getInteger(row.get(6)));
                 basicPrice.setUnitPriceRedHat9to127(getInteger(row.get(7)));
-                basicPrice.setUnitPriceRedHat128(getInteger(row.get(7)));
+                basicPrice.setUnitPriceRedHat128(getInteger(row.get(8)));
+                basicPrice.setRedhatFlag(getInteger(row.get(9)));
                 list.add(basicPrice);
             }
             insertDBDataBasicPrice(list);
@@ -77,25 +78,25 @@ public class MasterServiceImpl implements MasterService {
     @Override
     public void retrieveDataRelativePrice() {
         try {
-            var responseBody = callApiGetMasterData(Constants.RELATIVE_PRICE_DB_SCHEMA_ID);
-//            var responseBody = """
-//                    "契約サービスID","種別","仮想サーバvCPU(core)","仮想サーバメモリ","仮想ディスク class","仮想ディスク サイズ","月額料金","日料金","停止料金","ID"
-//                    "ccs99810","仮想サーバ","2","4","","0","12800","640","320","000000004"
-//                    "ccs99810","仮想サーバ","6","16","","0","42400","2120","1060","000000004"
-//                    "ccs99809","仮想サーバ","1","2","","0","7500","375","0","000000003"
-//                    "ccs99809","仮想サーバ","2","4","","0","15000","750","0","000000003"
-//                    "ccs99809","仮想サーバ","4","8","","","30000","1500","0","000000003"
-//                    "ccs99809","仮想サーバ","8","32","","0","81600","4080","0","000000003"
-//                    "ccs99809","仮想サーバ","16","64","","0","163200","8160","0","000000003"
-//                    "ccs99809","仮想サーバ","32","128","","0","326400","16320","0","000000003"
-//                    "ccs99806","仮想サーバ","1","2","","0","6200","310","0","000000002"
-//                    "ccs99806","仮想サーバ","2","4","","0","12400","620","0","000000002"
-//                    "ccs99806","仮想サーバ","4","8","","0","24800","1240","0","000000002"
-//                    "ccs99806","仮想サーバ","8","24","","0","59200","2960","0","000000002"
-//                    "ccs99803","仮想サーバ","1","2","","0","6200","310","0","000000001"
-//                    "ccs99803","仮想サーバ","2","4","","0","12400","620","0","000000001"
-//                    "ccs99803","仮想サーバ","4","8","","0","24800","1240","0","000000001"
-//                    """;
+//            var responseBody = callApiGetMasterData(Constants.RELATIVE_PRICE_DB_SCHEMA_ID);
+            var responseBody = """
+                    "契約サービスID","種別","仮想サーバvCPU(core)","仮想サーバメモリ","仮想ディスク class","仮想ディスク サイズ","月額料金","日料金","停止料金","ID"
+                    "ccs99810","仮想サーバ","2","4","","0","12800","640","320","000000004"
+                    "ccs99810","仮想サーバ","6","16","","0","42400","2120","1060","000000004"
+                    "ccs99809","仮想サーバ","1","2","","0","7500","375","0","000000003"
+                    "ccs99809","仮想サーバ","2","4","","0","15000","750","0","000000003"
+                    "ccs99809","仮想サーバ","4","8","","","30000","1500","0","000000003"
+                    "ccs99809","仮想サーバ","8","32","","0","81600","4080","0","000000003"
+                    "ccs99809","仮想サーバ","16","64","","0","163200","8160","0","000000003"
+                    "ccs99809","仮想サーバ","32","128","","0","326400","16320","0","000000003"
+                    "ccs99806","仮想サーバ","1","2","","0","6200","310","0","000000002"
+                    "ccs99806","仮想サーバ","2","4","","0","12400","620","0","000000002"
+                    "ccs99806","仮想サーバ","4","8","","0","24800","1240","0","000000002"
+                    "ccs99806","仮想サーバ","8","24","","0","59200","2960","0","000000002"
+                    "ccs99803","仮想サーバ","1","2","","0","6200","310","0","000000001"
+                    "ccs99803","仮想サーバ","2","4","","0","12400","620","0","000000001"
+                    "ccs99803","仮想サーバ","4","8","","0","24800","1240","0","000000001"
+                    """;
             CsvReader reader = CsvUtil.getReader();
             CsvData data = reader.readFromStr(responseBody);
             List<CsvRow> rows = data.getRows();
@@ -125,24 +126,24 @@ public class MasterServiceImpl implements MasterService {
     @Override
     public void retrieveDataNonCharge() {
         try {
-            var responseBody = callApiGetMasterData(Constants.NON_CHARGE_DB_SCHEMA_ID);
-//            var responseBody = """
-//                    "契約サービスID","種別","uuID","有料OS　課金フラグ","非課金　開始年月","非課金　終了年月"
-//                    "ccs99803","仮想サーバ","25d54998-55b1-47a7-ac06-11819b836aeb","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想サーバ","47c8b9ff-af7d-4be7-b01d-d255e44166d6","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想サーバ","8bd59eba-e46c-4b95-99aa-068dd0aa1ac0","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想サーバ","98845f97-7aee-4081-9127-a8a7292e4e17","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想サーバ","f8dae590-0260-48d5-b87a-bbab20973c65","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想サーバ","15b66a89-b5ff-47fa-80b8-d78225a98ec9","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想ディスク","5818eca7-b4ff-4842-9af4-843967de586e","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想ディスク","5a424048-233c-4178-ae66-f646611fbcf2","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想ディスク","73c9bf98-6c77-4d72-84bf-fa29f4f7d83c","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想ディスク","7bf541f0-4daa-49e6-b635-48349d04a5c2","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想ディスク","4496e18b-b612-4875-9892-6bd9758d3b41","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想ディスク","682e3774-018b-4288-a110-0b22dc757041","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想ディスク","9da73b5a-15d2-40d3-9497-07bc165426db","0","2024/11/01","2024/12/31"
-//                    "ccs99803","仮想ディスク","aa357a70-56a7-43c3-bb31-f20da6d7e1d6","0","2024/11/01","2024/12/31"
-//                    """;
+//            var responseBody = callApiGetMasterData(Constants.NON_CHARGE_DB_SCHEMA_ID);
+            var responseBody = """
+                    "契約サービスID","種別","uuID","有料OS　課金フラグ","非課金　開始年月","非課金　終了年月"
+                    "ccs99803","仮想サーバ","25d54998-55b1-47a7-ac06-11819b836aeb","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想サーバ","47c8b9ff-af7d-4be7-b01d-d255e44166d6","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想サーバ","8bd59eba-e46c-4b95-99aa-068dd0aa1ac0","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想サーバ","98845f97-7aee-4081-9127-a8a7292e4e17","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想サーバ","f8dae590-0260-48d5-b87a-bbab20973c65","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想サーバ","15b66a89-b5ff-47fa-80b8-d78225a98ec9","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想ディスク","5818eca7-b4ff-4842-9af4-843967de586e","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想ディスク","5a424048-233c-4178-ae66-f646611fbcf2","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想ディスク","73c9bf98-6c77-4d72-84bf-fa29f4f7d83c","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想ディスク","7bf541f0-4daa-49e6-b635-48349d04a5c2","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想ディスク","4496e18b-b612-4875-9892-6bd9758d3b41","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想ディスク","682e3774-018b-4288-a110-0b22dc757041","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想ディスク","9da73b5a-15d2-40d3-9497-07bc165426db","0","2024/11/01","2024/12/31"
+                    "ccs99803","仮想ディスク","aa357a70-56a7-43c3-bb31-f20da6d7e1d6","0","2024/11/01","2024/12/31"
+                    """;
 
             CsvReader reader = CsvUtil.getReader();
             CsvData data = reader.readFromStr(responseBody);
@@ -193,8 +194,8 @@ public class MasterServiceImpl implements MasterService {
         String sql = """
                 insert into aios_master_basic_price(network_id , unit_price_vm_1_cpu, unit_price_vm_1_gb, 
                                      unit_price_vdclass_1, unit_price_vdclass_2, unit_price_window_server, 
-                                     unit_price_red_hat_1_to_8, unit_price_red_hat_9_to_127, unit_price_red_hat_128, status)
-                values (?,?,?,?,?,?,?,?,?,?);
+                                     unit_price_red_hat_1_to_8, unit_price_red_hat_9_to_127, unit_price_red_hat_128, status, redhat_flag)
+                values (?,?,?,?,?,?,?,?,?,?,?);
                 """;
         try (Connection conn = DatabaseConnection.getInstance(); PreparedStatement ps = conn.prepareStatement(sql)) {
             conn.setAutoCommit(false);
@@ -206,7 +207,7 @@ public class MasterServiceImpl implements MasterService {
                 if (item.getNetworkID() == null || item.getUnitPriceVM1Cpu() == null || item.getUnitPriceVM1Gb() == null ||
                     item.getUnitPriceVDClass1() == null || item.getUnitPriceVDClass2() == null ||
                     item.getUnitPriceWindowServer() == null || item.getUnitPriceRedHat1to8() == null ||
-                    item.getUnitPriceRedHat9to127() == null || item.getUnitPriceRedHat128() == null) {
+                    item.getUnitPriceRedHat9to127() == null || item.getUnitPriceRedHat128() == null || item.getRedhatFlag() == null) {
                     item.setStatus(0);
                 }
 
@@ -219,7 +220,9 @@ public class MasterServiceImpl implements MasterService {
                 ps.setObject(7, item.getUnitPriceRedHat1to8());
                 ps.setObject(8, item.getUnitPriceRedHat9to127());
                 ps.setObject(9, item.getUnitPriceRedHat128());
-                ps.setInt(10, item.getStatus());
+                ps.setObject(10, item.getStatus());
+                ps.setObject(11, item.getRedhatFlag());
+
                 ps.addBatch();
 
                 if (i % 20 == 0) {
@@ -385,7 +388,7 @@ public class MasterServiceImpl implements MasterService {
         String sql = """
                     select id, network_id, unit_price_vm_1_cpu, unit_price_vm_1_gb,
                     unit_price_vdclass_1, unit_price_vdclass_2, unit_price_window_server,
-                    unit_price_red_hat_1_to_8, unit_price_red_hat_9_to_127, unit_price_red_hat_128, 
+                    unit_price_red_hat_1_to_8, unit_price_red_hat_9_to_127, unit_price_red_hat_128, redhat_flag,
                     status, created_date from aios_master_basic_price
                 """;
         try (Connection conn = DatabaseConnection.getInstance(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -403,6 +406,7 @@ public class MasterServiceImpl implements MasterService {
                 basicPrice.setUnitPriceRedHat1to8(getInteger(rs, "unit_price_red_hat_1_to_8"));
                 basicPrice.setUnitPriceRedHat9to127(getInteger(rs, "unit_price_red_hat_9_to_127"));
                 basicPrice.setUnitPriceRedHat128(getInteger(rs, "unit_price_red_hat_128"));
+                basicPrice.setRedhatFlag(getInteger(rs, "redhat_flag"));
                 basicPrice.setStatus(getInteger(rs, "status"));
                 list.add(basicPrice);
             }

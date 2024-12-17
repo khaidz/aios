@@ -5,8 +5,8 @@ import net.khaibq.addon.service.MasterServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class AddonMaster {
-    private static final Logger logger = LogManager.getLogger(AddonMaster.class);
+public class AiosMaster {
+    private static final Logger logger = LogManager.getLogger(AiosMaster.class);
 
     public static void main(String[] args) {
 

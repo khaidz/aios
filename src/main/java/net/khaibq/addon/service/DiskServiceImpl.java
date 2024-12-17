@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static net.khaibq.addon.utils.CommonUtils.defaultNullIfEmpty;
+import static net.khaibq.addon.utils.CommonUtils.defaultNull;
 import static net.khaibq.addon.utils.CommonUtils.writeToOutputFile;
 import static net.khaibq.addon.utils.Constants.OUTPUT_DIR;
 import static net.khaibq.addon.utils.Constants.VOLUMES_S12_S34_DIR;
@@ -377,16 +377,16 @@ public class DiskServiceImpl implements BaseService {
                         x.getTemplateName(),
                         x.getZoneID(),
                         x.getZoneName(),
-                        defaultNullIfEmpty(x.getAllocatedSize()),
-                        defaultNullIfEmpty(x.getOccupancyTime()),
+                        defaultNull(x.getAllocatedSize()),
+                        defaultNull(x.getOccupancyTime()),
                         x.getClazz(),
                         x.getState(),
-                        defaultNullIfEmpty(x.getCalcType()),
-                        defaultNullIfEmpty(x.getMonthlyPrice()),
-                        defaultNullIfEmpty(x.getDailyPrice()),
-                        defaultNullIfEmpty(x.getAllocatedSizeGB()),
-                        defaultNullIfEmpty(x.getOccupancyTimeDay()),
-                        defaultNullIfEmpty(x.getFlagMonth()),
+                        defaultNull(x.getCalcType()),
+                        defaultNull(x.getMonthlyPrice()),
+                        defaultNull(x.getDailyPrice()),
+                        defaultNull(x.getAllocatedSizeGB()),
+                        defaultNull(x.getOccupancyTimeDay()),
+                        defaultNull(x.getFlagMonth()),
                         String.valueOf(x.getIsValid()),
                         x.getInvalidReason()
                 })

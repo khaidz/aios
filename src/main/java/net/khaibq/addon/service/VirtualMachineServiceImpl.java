@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static net.khaibq.addon.utils.CommonUtils.defaultNullIfEmpty;
+import static net.khaibq.addon.utils.CommonUtils.defaultNull;
 import static net.khaibq.addon.utils.CommonUtils.writeToOutputFile;
 import static net.khaibq.addon.utils.Constants.OUTPUT_DIR;
 import static net.khaibq.addon.utils.Constants.SERVICE_OFFERING_DIR;
@@ -361,19 +361,19 @@ public class VirtualMachineServiceImpl implements BaseService {
                         x.getOfferName(),
                         x.getVmId(),
                         x.getVmName(),
-                        defaultNullIfEmpty(x.getOccupancyTime()),
-                        defaultNullIfEmpty(x.getRunningTime()),
-                        defaultNullIfEmpty(x.getCpu()),
-                        defaultNullIfEmpty(x.getRamSize()),
-                        defaultNullIfEmpty(x.getPauseTime()),
-                        defaultNullIfEmpty(x.getRunningTimeDay()),
-                        defaultNullIfEmpty(x.getPauseTimeDay()),
-                        defaultNullIfEmpty(x.getCalcType()),
-                        defaultNullIfEmpty(x.getMonthlyPrice()),
-                        defaultNullIfEmpty(x.getDailyPrice()),
-                        defaultNullIfEmpty(x.getStopFee()),
-                        defaultNullIfEmpty(x.getTotalAmount()),
-                        defaultNullIfEmpty(x.getFlagMonth()),
+                        defaultNull(x.getOccupancyTime()),
+                        defaultNull(x.getRunningTime()),
+                        defaultNull(x.getCpu()),
+                        defaultNull(x.getRamSize()),
+                        defaultNull(x.getPauseTime()),
+                        defaultNull(x.getRunningTimeDay()),
+                        defaultNull(x.getPauseTimeDay()),
+                        defaultNull(x.getCalcType()),
+                        defaultNull(x.getMonthlyPrice()),
+                        defaultNull(x.getDailyPrice()),
+                        defaultNull(x.getStopFee()),
+                        defaultNull(x.getTotalAmount()),
+                        defaultNull(x.getFlagMonth()),
                         String.valueOf(x.getIsValid()),
                         x.getInvalidReason()
                 })
