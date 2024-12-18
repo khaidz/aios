@@ -72,6 +72,7 @@ public class AiosBatchApp {
                     } else {
                         logger.error("Check result failed");
                     }
+
                 }, DELAY_TIME, TimeUnit.MINUTES);
 
             } else {
@@ -79,6 +80,8 @@ public class AiosBatchApp {
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
+        } finally {
+            scheduler.shutdown();
         }
 
     }
